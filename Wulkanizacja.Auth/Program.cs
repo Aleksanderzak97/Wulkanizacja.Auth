@@ -5,9 +5,27 @@ using Wulkanizacja.Auth.PostgreSQL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using EntityFramework.Exceptions.PostgreSQL;
 using Wulkanizacja.Auth.PostgreSQL.Services;
+using Microsoft.AspNetCore.Identity;
+using Wulkanizacja.Auth.PostgreSQL.Entities;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("LoginPolicy", context => RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        factory: key => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,                   // Maksymalnie 5 ¿¹dañ
+            Window = TimeSpan.FromMinutes(1),    // w ci¹gu 1 minuty
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0                     // brak kolejkowania – nadmiarowe ¿¹dania odrzucamy od razu
+        }));
+});
+
+builder.Services.AddScoped<IPasswordHasher<UserRecord>, PasswordHasher<UserRecord>>();
 builder.Services.AddScoped<IDatabaseMigrationService, DatabaseMigrationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddDbContext<UserDbContext>((service, options) =>

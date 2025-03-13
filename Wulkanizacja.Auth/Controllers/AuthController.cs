@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Wulkanizacja.Auth.Mapping;
 using Wulkanizacja.Auth.Models;
+using Wulkanizacja.Auth.PostgreSQL.Entities;
 using Wulkanizacja.Auth.PostgreSQL.Repositories;
 
 namespace Wulkanizacja.Auth.Controllers
@@ -25,12 +28,25 @@ namespace Wulkanizacja.Auth.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        [EnableRateLimiting("LoginPolicy")]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginModel login)
         {
-            if (login.Username != "test" || login.Password != "password")
+            if (!ModelState.IsValid)
             {
-                return Unauthorized();
+                return BadRequest(new ApiResponse(400, "Podano błędne dane"));
             }
+
+           var userRecord = login.ToUserRecord();
+            try
+            {
+                var tryLogin = await _userRepository.Login(userRecord, _cancellationToken);
+            }
+            catch(Exception e)
+            {
+                return Conflict(new ApiResponse(409, e.Message));
+            }
+
+
 
             var claims = new List<Claim>
         {
@@ -58,20 +74,28 @@ namespace Wulkanizacja.Auth.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ApiResponse(400, "Podano błędne dane"));
             }
 
             var userRecord = model.ToUserRecord();
 
             // Weryfikacja czy użytkownik już istnieje
-            var existingUser = await _userRepository.Login(userRecord, _cancellationToken);
+            var existingUser = await _userRepository.GetUserByUsername(userRecord.Username, _cancellationToken);
             if (existingUser != null)
             {
-                return Conflict("Użytkownik o takim loginie już istnieje.");
+                return Conflict(new ApiResponse(409, "Użytkownik o takim loginie już istnieje."));
             }
 
-            await _userRepository.Register(userRecord, _cancellationToken);
-            return Ok("Rejestracja przebiegła pomyślnie.");
+            try
+            {
+                await _userRepository.Register(userRecord, _cancellationToken);
+            }
+            catch(Exception e)
+            {
+                return Conflict(new ApiResponse(409, e.Message));
+            }
+           
+            return Ok(new ApiResponse(200, "Rejestracja przebiegła pomyślnie."));
         }
     }
 }
