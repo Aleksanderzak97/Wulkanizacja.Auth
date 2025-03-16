@@ -2,12 +2,12 @@
 {
     public class ApiResponse
     {
-        public int Code { get; set; }
-        public string Message { get; set; }
-        public ApiResponse(int code, string message)
+        public string Code { get; set; }
+        public string Reason { get; set; }
+        public ApiResponse(string code, string reason)
         {
             Code = code;
-            Message = message;
+            Reason = reason;
         }
     }
 }

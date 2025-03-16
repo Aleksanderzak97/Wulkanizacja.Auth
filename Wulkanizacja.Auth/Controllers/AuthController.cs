@@ -33,7 +33,7 @@ namespace Wulkanizacja.Auth.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ApiResponse(400, "Podano błędne dane"));
+                return BadRequest(new ApiResponse("400", "Podano błędne dane"));
             }
 
            var userRecord = login.ToUserRecord();
@@ -43,7 +43,7 @@ namespace Wulkanizacja.Auth.Controllers
             }
             catch(Exception e)
             {
-                return Conflict(new ApiResponse(409, e.Message));
+                return Conflict(new ApiResponse("409", e.Message));
             }
 
 
@@ -74,7 +74,7 @@ namespace Wulkanizacja.Auth.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ApiResponse(400, "Podano błędne dane"));
+                return BadRequest(new ApiResponse("400", "Podano błędne dane"));
             }
 
             var userRecord = model.ToUserRecord();
@@ -83,7 +83,7 @@ namespace Wulkanizacja.Auth.Controllers
             var existingUser = await _userRepository.GetUserByUsername(userRecord.Username, _cancellationToken);
             if (existingUser != null)
             {
-                return Conflict(new ApiResponse(409, "Użytkownik o takim loginie już istnieje."));
+                return Conflict(new ApiResponse("409", "Użytkownik o takim loginie już istnieje."));
             }
 
             try
@@ -92,10 +92,10 @@ namespace Wulkanizacja.Auth.Controllers
             }
             catch(Exception e)
             {
-                return Conflict(new ApiResponse(409, e.Message));
+                return Conflict(new ApiResponse("409", e.Message));
             }
            
-            return Ok(new ApiResponse(200, "Rejestracja przebiegła pomyślnie."));
+            return Ok(new ApiResponse("200", "Rejestracja przebiegła pomyślnie."));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Wulkanizacja.Auth.Mapping
             return new UserRecord
             {
                 Name = model.Name,
-                Surname = model.Surname,
+                LastName = model.LastName,
                 Username = model.Username,
                 Password = model.Password,
                 Email = model.Email

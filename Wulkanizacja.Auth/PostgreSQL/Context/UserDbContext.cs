@@ -19,7 +19,7 @@ namespace Wulkanizacja.Auth.PostgreSQL.Context
 
             modelBuilder.Entity<UserRecord>().HasKey(x => x.UserId);
             modelBuilder.Entity<UserRecord>().Property(x => x.Name).IsRequired();
-            modelBuilder.Entity<UserRecord>().Property(x => x.Surname).IsRequired();
+            modelBuilder.Entity<UserRecord>().Property(x => x.LastName).IsRequired();
             modelBuilder.Entity<UserRecord>().HasIndex(x => x.Username).IsUnique();
             modelBuilder.Entity<UserRecord>().Property(x => x.Password).IsRequired();
             modelBuilder.Entity<UserRecord>().HasIndex(x => x.Email).IsUnique();

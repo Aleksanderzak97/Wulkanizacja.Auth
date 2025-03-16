@@ -12,7 +12,7 @@ using Wulkanizacja.Auth.PostgreSQL.Context;
 namespace Wulkanizacja.Auth.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250313125151_InitialCreate")]
+    [Migration("20250314014322_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -35,15 +35,15 @@ namespace Wulkanizacja.Auth.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 
