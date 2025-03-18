@@ -27,6 +27,8 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
     "ExpiresInHours": 1
   },
 
+  W przypadku dockera konfiguracja polaczenia z bazą jest w pliku docker-compose.yml
+
 ## Uruchomienie
 1. Sklonuj repozytorium
 2. Otwórz projekt w Visual Studio
@@ -38,7 +40,8 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 ## Uruchomienie Alternatywne Docker
 1. Zainstaluj program Docker Desktop
 2. Wejdz do folderu Wulkanizacja.Auth\Wulkanizacja.Auth >> tutaj gdzie plik csproj
-3. Uruchom cmd z tego poziomu
+3. Skonfiguruj połączenie z bazą PostgreSQL w pliku docker-compose.yml
+3. Uruchom cmd z poziomu folderu
 4. Wpisz docker-compose build a następnie docker-compose up -d
 5. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger.
 
