@@ -12,16 +12,16 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Wulkanizacja.Auth/Wulkanizacja.Auth.csproj", "Wulkanizacja.Auth/"]
-RUN dotnet restore "./Wulkanizacja.Auth/Wulkanizacja.Auth.csproj"
+COPY ["Wulkanizacja.Auth.csproj", "./"]
+RUN dotnet restore "Wulkanizacja.Auth.csproj"
 COPY . .
-WORKDIR "/src/Wulkanizacja.Auth"
-RUN dotnet build "./Wulkanizacja.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+RUN dotnet build "Wulkanizacja.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Ten etap służy do publikowania projektu usługi do skopiowania do etapu końcowego
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Wulkanizacja.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Wulkanizacja.Auth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Ten etap jest używany w środowisku produkcyjnym lub w przypadku uruchamiania z programu VS w trybie regularnym (domyślnie, gdy nie jest używana konfiguracja debugowania)
 FROM base AS final
