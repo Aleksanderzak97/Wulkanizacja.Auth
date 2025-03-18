@@ -35,6 +35,13 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 5. Migracje zostaną zastosowane automatycznie podczas uruchamiania aplikacji.
 6. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger.
 
+## Uruchomienie Alternatywne Docker
+1. Zainstaluj program Docker Desktop
+2. Wejdz do folderu Wulkanizacja.Auth\Wulkanizacja.Auth >> tutaj gdzie plik csproj
+3. Uruchom cmd z tego poziomu
+4. Wpisz docker-compose build a następnie docker-compose up -d
+5. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger.
+
 ## Endpointy
 - 'POST   /Auth/login'      - Sprawdza dane podane do logowania i zwraca token do uwierzytelnienia się z serwisem Wulkanizacja Service oraz zalogowania do aplikacji dekstopowej
 - 'POST   /Auth/register'   - Rejestruje nowego użytkownika w bazie
