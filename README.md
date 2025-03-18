@@ -46,8 +46,8 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 5. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger. Dla użytkowników preferujących interfejs graficzny, dostępna jest także aplikacja desktopowa, która umożliwia wygodne korzystanie z funkcjonalności API.
 
 ## Endpointy
-- 'POST   /Auth/login'      - Sprawdza dane podane do logowania i zwraca token do uwierzytelnienia się z serwisem Wulkanizacja Service oraz zalogowania do aplikacji dekstopowej
-- 'POST   /Auth/register'   - Rejestruje nowego użytkownika w bazie
+- `POST   /Auth/login`      - Sprawdza dane podane do logowania i zwraca token do uwierzytelnienia się z serwisem Wulkanizacja Service oraz zalogowania do aplikacji dekstopowej
+- `POST   /Auth/register`   - Rejestruje nowego użytkownika w bazie
 
 ## Dokumentacja API
 Dokumentacja API jest dostępna pod adresem http://localhost:5020/swagger po uruchomieniu aplikacji. Aby przetestować endpointy, można użyć załączonej kolekcji Postmana znajdującej się w katalogu Postman (Tutaj gdzie ten README)
