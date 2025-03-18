@@ -16,7 +16,7 @@ Wulkanizacja.Auth to projekt autoryzacji i uwierzytelniania użytkowników, zbud
 
 ## Konfiguracja
 Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych PostgreSQL oraz konfigurację JWT
-
+```json
  "postgres": {
    "ConnectionString": "Database=Users;Username=postgres;Enlist=False;Password=admin;Port=5432;Host=localhost;TimeZone=Europe/Warsaw"
  },
@@ -26,7 +26,7 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
     "Issuer": "WulkanizacjaAuth",
     "ExpiresInHours": 1
   },
-
+```
   W przypadku dockera konfiguracja polaczenia z bazą jest w pliku docker-compose.yml
 
 ## Uruchomienie
@@ -50,8 +50,7 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 - 'POST   /Auth/register'   - Rejestruje nowego użytkownika w bazie
 
 ## Dokumentacja API
-Dokumentacja API jest dostępna pod adresem http://localhost:5020/swagger po uruchomieniu aplikacji. Aby przetestować endpointy, można użyć załączonej kolekcji Postmana znajdującej się w katalogu Postman (Tutaj gdzie ten README):
-
+Dokumentacja API jest dostępna pod adresem http://localhost:5020/swagger po uruchomieniu aplikacji. Aby przetestować endpointy, można użyć załączonej kolekcji Postmana znajdującej się w katalogu Postman (Tutaj gdzie ten README)
 
 ## Autorzy
 - [Aleksander Żak]
