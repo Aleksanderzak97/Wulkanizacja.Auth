@@ -35,7 +35,7 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 3. Skonfiguruj bazę danych PostgreSQL zgodnie z ustawieniami w appsettings.json.
 4. Uruchom aplikację za pomocą Visual Studio 2022.
 5. Migracje zostaną zastosowane automatycznie podczas uruchamiania aplikacji.
-6. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger.
+6. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger. Dla użytkowników preferujących interfejs graficzny, dostępna jest także aplikacja desktopowa, która umożliwia wygodne korzystanie z funkcjonalności API.
 
 ## Uruchomienie Alternatywne Docker
 1. Zainstaluj program Docker Desktop
@@ -43,7 +43,7 @@ Plik 'appsettings.json' zawiera konfigurację połączenia z bazą danych Postgr
 3. Skonfiguruj połączenie z bazą PostgreSQL w pliku docker-compose.yml
 3. Uruchom cmd z poziomu folderu
 4. Wpisz docker-compose build a następnie docker-compose up -d
-5. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger.
+5. Teraz można testować endpointy z załączonej kolekcji postmana lub przez API swaggera pod adresem http://localhost:5020/swagger. Dla użytkowników preferujących interfejs graficzny, dostępna jest także aplikacja desktopowa, która umożliwia wygodne korzystanie z funkcjonalności API.
 
 ## Endpointy
 - 'POST   /Auth/login'      - Sprawdza dane podane do logowania i zwraca token do uwierzytelnienia się z serwisem Wulkanizacja Service oraz zalogowania do aplikacji dekstopowej
