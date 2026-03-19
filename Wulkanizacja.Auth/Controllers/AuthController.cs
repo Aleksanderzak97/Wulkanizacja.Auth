@@ -18,13 +18,11 @@ namespace Wulkanizacja.Auth.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
-        private readonly CancellationToken _cancellationToken;
 
-        public AuthController(IConfiguration configuration, IUserRepository userRepository, CancellationToken cancellationToken = default)
+        public AuthController(IConfiguration configuration, IUserRepository userRepository)
         {
             _configuration = configuration;
             _userRepository = userRepository;
-            _cancellationToken = cancellationToken;
         }
 
         [HttpPost("login")]
@@ -36,17 +34,15 @@ namespace Wulkanizacja.Auth.Controllers
                 return BadRequest(new ApiResponse("400", "Podano błędne dane"));
             }
 
-           var userRecord = login.ToUserRecord();
+            var userRecord = login.ToUserRecord();
             try
             {
-                var tryLogin = await _userRepository.Login(userRecord, _cancellationToken);
+                _ = await _userRepository.Login(userRecord, HttpContext.RequestAborted);
             }
-            catch(Exception e)
+            catch (UnauthorizedAccessException e)
             {
                 return Conflict(new ApiResponse("409", e.Message));
             }
-
-
 
             var claims = new List<Claim>
         {
@@ -60,7 +56,6 @@ namespace Wulkanizacja.Auth.Controllers
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: expires,
                 signingCredentials: creds);
@@ -80,7 +75,7 @@ namespace Wulkanizacja.Auth.Controllers
             var userRecord = model.ToUserRecord();
 
             // Weryfikacja czy użytkownik już istnieje
-            var existingUser = await _userRepository.GetUserByUsername(userRecord.Username, _cancellationToken);
+            var existingUser = await _userRepository.GetUserByUsername(userRecord.Username, HttpContext.RequestAborted);
             if (existingUser != null)
             {
                 return Conflict(new ApiResponse("409", "Użytkownik o takim loginie już istnieje."));
@@ -88,13 +83,13 @@ namespace Wulkanizacja.Auth.Controllers
 
             try
             {
-                await _userRepository.Register(userRecord, _cancellationToken);
+                await _userRepository.Register(userRecord, HttpContext.RequestAborted);
             }
-            catch(Exception e)
+            catch (InvalidOperationException e)
             {
                 return Conflict(new ApiResponse("409", e.Message));
             }
-           
+
             return Ok(new ApiResponse("200", "Rejestracja przebiegła pomyślnie."));
         }
     }

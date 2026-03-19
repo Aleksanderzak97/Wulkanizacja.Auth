@@ -14,14 +14,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRateLimiter(options =>
 {
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        await context.HttpContext.Response.WriteAsJsonAsync(new { code = "429", reason = "Zbyt wiele prÃ³b logowania. SprÃ³buj ponownie za chwilÄ™." }, cancellationToken);
+    };
+
     options.AddPolicy("LoginPolicy", context => RateLimitPartition.GetFixedWindowLimiter(
         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         factory: key => new FixedWindowRateLimiterOptions
         {
-            PermitLimit = 5,                   // Maksymalnie 5 ¿¹dañ
-            Window = TimeSpan.FromMinutes(1),    // w ci¹gu 1 minuty
+            PermitLimit = 5,                   // Maksymalnie 5 Å¼Ä…daÅ„
+            Window = TimeSpan.FromMinutes(1),    // w ciÄ…gu 1 minuty
             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-            QueueLimit = 0                     // brak kolejkowania – nadmiarowe ¿¹dania odrzucamy od razu
+            QueueLimit = 0                     // brak kolejkowania â€“ nadmiarowe Å¼Ä…dania odrzucamy od razu
         }));
 });
 
@@ -64,6 +71,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRateLimiter();
 app.UseAuthorization();
 
 app.MapControllers();

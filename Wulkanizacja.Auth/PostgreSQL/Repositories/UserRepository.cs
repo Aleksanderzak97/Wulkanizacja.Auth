@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using Wulkanizacja.Auth.PostgreSQL.Context;
 using Wulkanizacja.Auth.PostgreSQL.Entities;
 
@@ -19,72 +16,40 @@ namespace Wulkanizacja.Auth.PostgreSQL.Repositories
 
         public async Task<UserRecord> Login(UserRecord userRecord, CancellationToken cancellationToken)
         {
-            await WaitForFreeTransaction(cancellationToken);
-
             var user = await GetUserByUsername(userRecord.Username, cancellationToken);
-            if(user == null)
+            if (user == null)
             {
-                throw new Exception("Błędny login");
+                throw new UnauthorizedAccessException("Błędny login");
             }
+
             var result = _passwordHasher.VerifyHashedPassword(userRecord, user.Password, userRecord.Password);
             if (result == PasswordVerificationResult.Failed)
             {
-                throw new Exception("Podano błędne hasło");
+                throw new UnauthorizedAccessException("Podano błędne hasło");
             }
-                return user;
+
+            return user;
         }
 
         public async Task<UserRecord> Register(UserRecord userRecord, CancellationToken cancellationToken)
         {
-            await WaitForFreeTransaction(cancellationToken);
-
-            await using var transaction = await userDbContext.Database.BeginTransactionAsync(cancellationToken);
-
-            try
+            var userFromLogin = await userDbContext.Users.FirstOrDefaultAsync(x => x.Username == userRecord.Username, cancellationToken);
+            if (userFromLogin != null)
             {
-                var userFromLogin = await userDbContext.Users.FirstOrDefaultAsync(x => x.Username == userRecord.Username, cancellationToken);
-                if (userFromLogin != null)
-                {
-                    throw new Exception("Użytkownik o takim loginie już istnieje");
-                }
-                var userFromEmail = await userDbContext.Users.FirstOrDefaultAsync(x => x.Email == userRecord.Email, cancellationToken);
-                if (userFromEmail != null)
-                {
-                    throw new Exception("Adres Email jest w użyciu");
-                }
+                throw new InvalidOperationException("Użytkownik o takim loginie już istnieje");
+            }
 
-                userRecord.Password = _passwordHasher.HashPassword(userRecord, userRecord.Password);
-                await userDbContext.Users.AddAsync(userRecord, cancellationToken);
-                await SaveContextChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                return userRecord;
-            }
-            catch (Exception ex)
+            var userFromEmail = await userDbContext.Users.FirstOrDefaultAsync(x => x.Email == userRecord.Email, cancellationToken);
+            if (userFromEmail != null)
             {
-                Debug.WriteLine(ex.Message);
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
+                throw new InvalidOperationException("Adres Email jest w użyciu");
             }
-        }
 
-        private async Task SaveContextChangesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await userDbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-        }
+            userRecord.Password = _passwordHasher.HashPassword(userRecord, userRecord.Password);
+            await userDbContext.Users.AddAsync(userRecord, cancellationToken);
+            await userDbContext.SaveChangesAsync(cancellationToken);
 
-        private async Task WaitForFreeTransaction(CancellationToken cancellationToken)
-        {
-            while (userDbContext.Database.CurrentTransaction != null)
-            {
-                await Task.Delay(100, cancellationToken);
-            }
+            return userRecord;
         }
     }
 }
