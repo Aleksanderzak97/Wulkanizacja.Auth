@@ -8,8 +8,13 @@ using Wulkanizacja.Auth.PostgreSQL.Services;
 using Microsoft.AspNetCore.Identity;
 using Wulkanizacja.Auth.PostgreSQL.Entities;
 using System.Threading.RateLimiting;
+using Wulkanizacja.Auth.Vault;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var vaultState = await VaultBootstrapper.LoadSecretsAsync(builder.Configuration);
+builder.Services.AddSingleton(vaultState);
+builder.Services.AddHostedService<VaultTokenRefreshService>();
 
 
 builder.Services.AddRateLimiter(options =>
@@ -43,10 +48,6 @@ builder.Services.AddDbContext<UserDbContext>((service, options) =>
                          .UseExceptionProcessor();
 
                  });
-builder.Configuration
-       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-       .AddEnvironmentVariables();
 builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection("postgres"));
 
 builder.Services.AddControllers();
